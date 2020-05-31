@@ -65,6 +65,11 @@ void bookstreeadd(struct books* p, char* str);
 void bookstreeaddnew(struct books* p);
 void bookstreedelete(struct books* p);
 struct books* searchbookstree(struct books* p, char* str);
+void deletebookstree(struct books* );
+void bookstreedelete(struct books* p);
+void writebookstree(struct books* p, FILE* file);
+void returnbookstree(struct books* p);
+
 
 //---------------------------------------------------функции
 unsigned int hash(char* s) {
@@ -147,7 +152,7 @@ char* getstr1(FILE* file) {
     }
     else {
         
-        //printf("else NULL\n");
+        printf("else NULL\n");
         return NULL;
     }
 }
@@ -171,13 +176,13 @@ char* getstr(FILE* file) {
 }
 char* readstr()
 {
-    printf("vhod readstr");
+    printf("vhod readstr\n");
     int c;
     char* str = NULL;
     int i = 0;
     c = getchar();
     c = getchar();
-    printf("schityvanie c = %c", c);
+    printf("schityvanie c = %c\n", c);
     while (c != '\n')
     {
         i++;
@@ -299,12 +304,20 @@ struct books* loadbookstree(struct books* p) {
     prevbooks = NULL;
   //  printf("vhod loadbooktree\n");
     str = getstr1(file);
-    while ((str != NULL)&&(booksmark != 1)) {
-   //     printf("vhod v while loadbooktree\n");
+
+    while ((str != NULL) ) {
+        
+        printf("vhod v while loadbooktree\n");
         s = extractstr(str, 1);
         p = addbookstree(p, str, s, NULL);
         free(s);
-        str = getstr1(file);
+        //str = getstr1(file);
+        if (booksmark == 1) {
+            str = NULL;
+        }
+        else {
+            str = getstr1(file);
+        }
     }
    // printf("vyhod loadbooktree\n");
     fclose(file);
@@ -343,7 +356,7 @@ struct books* addbookstree(struct books* p, char *str, char* s, struct books* pr
 void bookstreeadd(struct books* p, char* str) {
    // printf("vhod bookadd\n");
     p->ISBN = extractstr(str, 1);
-    printf("ISBN - %s \n", p->ISBN);
+    printf("ISBN - %s, p = %d \n", p->ISBN, (int)p);
     p->author = extractstr(str, 2);
     p->title = extractstr(str, 3);
     p->amount = extractint(str, 4);
@@ -357,7 +370,7 @@ void bookstreeaddnew(struct books* p) {
 //    scanf("%s", str);
     char* s = extractstr(str, 1);
     if ((strlen(str) < 20)|| (strlen(s) != 10)) {
-        printf("wrong data");
+        printf("wrong data\n");
         return ;
     }
     
@@ -375,48 +388,53 @@ void bookstreedelete(struct books* p) {
         printf("wrong IBSN\n");
         return;
     }
+    printf("str - %s\n", str);
     delp = searchbookstree(p, str);
-    if (delp = NULL) {
+    printf("vozvrats delp = %d\n", (int)delp);
+    printf(" |%d| |%s| %d \n", (int)delp, delp->ISBN, (int)(delp->parent));
+    if (delp == NULL) {
         printf("nothing found\n");
         return;
     }
-    //    scanf("%s", str);
-    char* s = extractstr(str, 1);
-    if ((strlen(str) < 20) || (strlen(s) != 10)) {
-        printf("wrong data");
-        return;
-    }
-
-    p = addbookstree(p, str, s, NULL);
-    free(s);
+    deletebookstree( delp);
     free(str);
     return;
 }
-struct books* deletebookstree(struct books* p,  struct books* delel) {
-    struct books* prev = delel->parent;
+void deletebookstree(  struct books* delel1) {
+    printf("vhod deletebookstree\n");
+    struct books* prev1;
+    printf(" %d \n", (int)delel1);
+    struct books* delel;
+    delel = delel1;
+    prev1 = (delel->parent);
+    printf("pered if\n");
     struct books* nextright;
+    printf("pered if\n");
     if ((delel->left == NULL) && (delel->right == NULL)) {
+        printf("net zavisimyh\n");
         if (delel->parent == NULL) {
             *rootbooks = NULL;
         }
         else {
-            if (prev->left == delel)
-                prev->left = NULL;
-            if (prev->right == delel)
-                prev->right = NULL;
+            if (prev1->left == delel)
+                prev1->left = NULL;
+            if (prev1->right == delel)
+                prev1->right = NULL;
         }
         
     }
     else if ((delel->left == NULL) || (delel->right == NULL)) {
+        printf("1 zavisimy\n");
+
         if (delel->left == NULL) {
             if (delel->parent == NULL) {
                 *rootbooks = delel->right;
             }
             else {
-                if (prev->left == delel)
-                    prev->left = delel->right;
-                if (prev->right == delel)
-                    prev->right = delel->right;
+                if (prev1->left == delel)
+                    prev1->left = delel->right;
+                if (prev1->right == delel)
+                    prev1->right = delel->right;
             }
         }
         else {
@@ -424,14 +442,15 @@ struct books* deletebookstree(struct books* p,  struct books* delel) {
                 *rootbooks = delel->left;
             }
             else {
-                if (prev->left == delel)
-                    prev->left = delel->left;
-                if (prev->right == delel)
-                    prev->right = delel->left;
+                if (prev1->left == delel)
+                    prev1->left = delel->left;
+                if (prev1->right == delel)
+                    prev1->right = delel->left;
             }
         }
     }
     else {
+        printf("2 zavisimyh\n");
         nextright = delel->right;
         while (nextright->left != NULL) {
             nextright = nextright->left;
@@ -442,34 +461,35 @@ struct books* deletebookstree(struct books* p,  struct books* delel) {
             *rootbooks = delel->right;
         }
         else {
-            if (prev->left == delel)
-                prev->left = delel->right;
-            if (prev->right == delel)
-                prev->right = delel->right;
+            if (prev1->left == delel)
+                prev1->left = delel->right;
+            if (prev1->right == delel)
+                prev1->right = delel->right;
         }
     }
+    free(delel->ISBN);
+    free(delel->title);
+    free(delel->author);
+    free(delel);
     // printf("vyhod addbooktree\n");
-    return p;
+    printf("vyhod deletebookstree\n");
+    return ;
 }
 
 struct books* searchbookstree(struct books* p, char* str) {
-    int cond;
     if (p == NULL) {
         return NULL;
     }
-    else {
-        if ((cond = strcmp(str, p->ISBN)) == 0) {
-            return p;
+    int cond = strcmp(str, p->ISBN);
+    printf("condition %d\n", cond);
+         if ((cond) > 0) {
+            return searchbookstree(p->right, str);
         }
-        else if ((cond = strcmp(str, p->ISBN)) > 0) {
-            p = searchbookstree(p->right, str);
-            return p;
+        else if ((cond) < 0) {
+            return searchbookstree(p->left, str);
         }
-        else if ((cond = strcmp(str, p->ISBN)) < 0) {
-            p = searchbookstree(p->left, str);
-            return p;
-        }
-    }
+    
+    return p;
 }
 void printbookstree(struct books* p) {
     //printf("vhod printbook");
@@ -477,6 +497,20 @@ void printbookstree(struct books* p) {
         printbookstree(p->left);
         printf("ISBN %s |Title %s  | Author  %s |  Amount %d | Count %d\n", p->ISBN, p->title, p->author, p->amount, p->count);
         printbookstree(p->right);
+    }
+}
+void returnbookstree(struct books* p) {
+    FILE* fileclose;
+    fileclose = openfile("books1.csv", "w");
+    writebookstree(p, fileclose);
+    fclose(fileclose);
+}
+void writebookstree(struct books* p, FILE* file) {
+    if (p != NULL) {
+        writebookstree(p->left, file);
+        fprintf(file, "%s;%s;%s;%d;%d\n", p->ISBN,p->author,p->title,p->amount,p->count);
+        //fprintf(file, "%s;%s;%s;%d;%d\n", p->ISBN, p->author, p->title, p->amount, p->count);
+        writebookstree(p->right, file);
     }
 }
 void freetree(struct books* p) {
@@ -506,7 +540,7 @@ int main() {
     root = loadbookstree(root);
     printf("Menu\nAdd city - 1\nRemove city - 2\nList all - 3\n");
     c = getchar();
-    while (c != EOF) {
+    while (c != 'e') {
         switch (c) {
         case '1':
             
@@ -517,7 +551,10 @@ int main() {
             bookstreeaddnew(root);
             break;
         case '3':
-            print();
+            bookstreedelete(root);
+            break;
+        case '4':
+            bookstreedelete(root);
             break;
         case '\n':
 
@@ -530,7 +567,9 @@ int main() {
             break;
         }
         c = getchar();
+        //printf("sym %d \n", c);
     }
+    returnbookstree(root);
     freetree(root);
     
 
