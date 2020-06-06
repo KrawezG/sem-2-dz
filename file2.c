@@ -80,6 +80,7 @@ char* readstr();
 char* readstr1();
 char* extractstr(char* str, int num);
 int extractint(char* str, int num);
+void addlog(char* str);
 
 struct books* loadbookstree(struct books* p);
 struct books* tallocbooks(void);
@@ -177,7 +178,7 @@ char* getstr1(FILE* file) {
     if ( i !=1){
         string = (char*)realloc(string, i * sizeof(char));
         string[i - 1] = 0; '\0';
-        printf("symbol = EOF && i !=1 %s, %i, %i, %d\n", string, i*sizeof(char), i, (int)string);
+        //printf("symbol = EOF && i !=1 %s, %i, %i, %d\n", string, i*sizeof(char), i, (int)string);
 //        if (i == 65) {
 //            string = (char*)realloc(string, i * sizeof(char));
 //            putchar('4');
@@ -190,24 +191,6 @@ char* getstr1(FILE* file) {
         return NULL;
     }
 }
-/*char* getstr(FILE* file) {
-    char symbol;
-    int i=1;
-    char* string;
-    string = (char*)malloc(sizeof(char));
-    for (i = 1; (symbol = getc(file)) != '\n' && (symbol != EOF); i++) {
-        string = (char*)realloc(string, i * sizeof(char));
-        string[i - 1] = symbol;
-    }
-    if (symbol == EOF ) {
-        return NULL;
-    }
-    
-    else {
-        string[i - 1] = '\0';
-        return string;
-    }
-}*/
 char* readstr()
 {
     //printf("vhod readstr\n");
@@ -352,6 +335,19 @@ int extractint(char* str, int num) {
         return number;
     }
 }
+void addlog(char * str) {
+    FILE* file;
+    file = openfile("library.log", "a");
+    char time1[50] = { 0 };
+    struct tm* t;
+    time_t timer = time(NULL);
+    t = localtime(&timer);
+    strftime(time1, 40, "\"%d.%m.%Y %H:%M:%S\"", t);
+    fprintf(file, "%s;\"%s\";\"%s\"\n", time1, currentuser->login, str);
+    
+
+    fclose(file);
+}
 //-----------------------------------------------------функции books.csv
 struct books* tallocbooks(void) {
     return (struct books*) malloc(sizeof(struct books));
@@ -368,7 +364,7 @@ struct books* loadbookstree(struct books* p) {
 
     while ((str != NULL) ) {
         
-        printf("vhod v while loadbooktree\n");
+        //printf("vhod v while loadbooktree\n");
         s = extractstr(str, 1);
         p = addbookstree(p, str, s, NULL);
         if (s != NULL)
@@ -393,7 +389,7 @@ struct books* addbookstree(struct books* p, char *str, char* s, struct books* pr
    // char* s;
     int cond;
   //  s = extractstr(str, 1);
-    printf("ISBN - %s \n", s);
+    //printf("ISBN - %s \n", s);
     if (p == NULL) {
     //    printf("p null\n");
         p = tallocbooks();
@@ -420,7 +416,7 @@ struct books* addbookstree(struct books* p, char *str, char* s, struct books* pr
 void bookstreeadd(struct books* p, char* str) {
    // printf("vhod bookadd\n");
     p->ISBN = extractstr(str, 1);
-    printf("ISBN - %s, p = %d \n", p->ISBN, (int)p);
+    //printf("ISBN - %s, p = %d \n", p->ISBN, (int)p);
     p->author = extractstr(str, 2);
     p->title = extractstr(str, 3);
     p->amount = extractint(str, 4);
@@ -471,18 +467,18 @@ void bookstreedelete(struct books* p) {
     return;
 }
 void deletebookstree(  struct books* delel1) {
-    printf("vhod deletebookstree\n");
+    //printf("vhod deletebookstree\n");
     struct books* prev1;
-    printf(" %d \n", (int)delel1);
+    //printf(" %d \n", (int)delel1);
     struct books* delel;
     delel = delel1;
     int i = 0;
     prev1 = (delel->parent);
-    printf("pered if\n");
+    //printf("pered if\n");
     struct books* nextright;
-    printf("pered if\n");
+    //printf("pered if\n");
     if ((delel->left == NULL) && (delel->right == NULL)) {
-        printf("net zavisimyh\n");
+        //printf("net zavisimyh\n");
         if (delel->parent == NULL) {
             *rootbooks = NULL;
         }
@@ -550,7 +546,7 @@ void deletebookstree(  struct books* delel1) {
     free(delel->author);
     free(delel);
     // printf("vyhod addbooktree\n");
-    printf("vyhod deletebookstree\n");
+    //printf("vyhod deletebookstree\n");
     return ;
 }
 struct books* searchbookstree(struct books* p, char* str) {
@@ -558,7 +554,7 @@ struct books* searchbookstree(struct books* p, char* str) {
         return NULL;
     }
     int cond = strcmp(str, p->ISBN);
-    printf("condition %d\n", cond);
+    //printf("condition %d\n", cond);
          if ((cond) > 0) {
             return searchbookstree(p->right, str);
         }
@@ -572,13 +568,14 @@ void printbookstree(struct books* p) {
     //printf("vhod printbook");
     if (p != NULL) {
         printbookstree(p->left);
-        printf("ISBN %s |Title %s  | Author  %s |  Amount %d | Count %d\n", p->ISBN, p->title, p->author, p->amount, p->count);
+        
+        printf(" %-10s | %-30s  | %-30s | %-3d    |%-3d\n", p->ISBN, p->title, p->author, p->amount, p->count);
         printbookstree(p->right);
     }
 }
 void returnbookstree(struct books* p) {
     FILE* fileclose;
-    fileclose = openfile("books1.csv", "w");
+    fileclose = openfile("books.csv", "w");
     writebookstree(p, fileclose);
     fclose(fileclose);
 }
@@ -658,9 +655,9 @@ void giveoutbook(struct books* p) {
     time_t next = mktime(u);
     u = localtime(&next);
     strftime(time1, 13, "\"%d.%m.%Y\"", u);
-    printf("time1  = %s\n", time1);
+    //printf("time1  = %s\n", time1);
     addbookleasenode1( strID, strISBN, time1);
-    printf("marker 1, %d\n", (int)*rootbooklease);
+    //printf("marker 1, %d\n", (int)*rootbooklease);
     //free(strID);
     //free(strISBN);
     //free(u);
@@ -698,7 +695,7 @@ void returnbook(struct books* p) {
         return;
     }
     chanp->count++;
-    printf("before del, %d\n", (int)delel);
+    //printf("before del, %d\n", (int)delel);
     bookleasenodedelete(delel);
 
 }
@@ -727,7 +724,7 @@ struct students* loadstudentstree(struct students* p) {
 
     while ((str != NULL)) {
 
-        printf("vhod v while loadstudentstree\n");
+        //printf("vhod v while loadstudentstree\n");
         s = extractstr(str, 1);
         p = addstudentstree(p, str, s, NULL);
         //printf("before free loadstudentstree, %d\n", (int)s);
@@ -736,7 +733,7 @@ struct students* loadstudentstree(struct students* p) {
         free(s); putchar('0');
         //printf("first free loadstudentstree, %d\n", (int)str);
         free(str); putchar('1');
-        printf("second free loadstudentstree\n");
+        //printf("second free loadstudentstree\n");
         //str = getstr1(file);
         if (treemark == 1) {
             str = NULL;
@@ -744,9 +741,9 @@ struct students* loadstudentstree(struct students* p) {
         else {
             str = getstr1(file);
         }
-        printf("vyhod v while loadstudentstree\n");
+        //printf("vyhod v while loadstudentstree\n");
     }
-     printf("vyhod loadstudentstree\n");
+     //printf("vyhod loadstudentstree\n");
     fclose(file);
     treemark = 0;
     return p;
@@ -757,7 +754,7 @@ struct students* addstudentstree(struct students* p, char* str, char* s, struct 
     // char* s;
     int cond;
     //  s = extractstr(str, 1);
-    printf("ID - %s \n", s);
+    //printf("ID - %s \n", s);
     if (p == NULL) {
         //    printf("p null\n");
         p = tallocstudents();
@@ -778,22 +775,22 @@ struct students* addstudentstree(struct students* p, char* str, char* s, struct 
         p->right = addstudentstree(p->right, str, s, p);
 
     }
-     printf("vyhod addstudenttree\n");
+     //printf("vyhod addstudenttree\n");
     return p;
 }
 void studentstreeadd(struct students* p, char* str) {
     // printf("vhod bookadd\n");
     p->ID = extractstr(str, 1);
-    printf("ID - %s, p = %d \n", p->ID, (int)p);
+    //printf("ID - %s, p = %d \n", p->ID, (int)p);
     p->surname = extractstr(str, 2);
     p->name = extractstr(str, 3);
     p->patronymic = extractstr(str, 4);
     p->faculty = extractstr(str, 5);
     p->speciality = extractstr(str, 6);
-    printf("studentadd\n");
+    //printf("studentadd\n");
 }
 void studentstreeaddnew(struct students* p) {
-    printf("\nVvedite str:");
+    printf("\nEnter str:");
     char* str;
     str = readstr();
     //    scanf("%s", str);
@@ -809,7 +806,7 @@ void studentstreeaddnew(struct students* p) {
     return;
 }
 void studentstreedelete(struct students* p) {
-    printf("\nVvedite ID:");
+    printf("\nEnter ID:");
     char* str;
     struct students* delp;
     str = readstr();
@@ -927,7 +924,7 @@ struct students* searchstudentstree(struct students* p, char* str) {
         return NULL;
     }
     int cond = strcmp(str, p->ID);
-    printf("condition %d\n", cond);
+    //printf("condition %d\n", cond);
     if ((cond) > 0) {
         return searchstudentstree(p->right, str);
     }
@@ -941,12 +938,13 @@ void printstudentstree(struct students* p) {
     //printf("vhod printbook");
     if (p != NULL) {
         printstudentstree(p->left);
-        printf("ID %s |Surname %s  | Name  %s |  Patronymic %s | Faculty %s | Speciality %s\n", p->ID, p->surname, p->name, p->patronymic, p->faculty, p->speciality);
+        
+        printf(" %-6s | %-30s | %-15s | %-30s | %-7s | %-30s\n", p->ID, p->surname, p->name, p->patronymic, p->faculty, p->speciality);
         printstudentstree(p->right);
     }
 }
 void printstudentbooks(struct students* p) {
-    printf("\nVvedite ID:");
+    printf("\nEnter ID:");
     char* strID;
     struct students* delp;
     strID = readstr();
@@ -955,7 +953,7 @@ void printstudentbooks(struct students* p) {
 }
 void returnstudentstree(struct students* p) {
     FILE* fileclose;
-    fileclose = openfile("students1.csv", "w");
+    fileclose = openfile("students.csv", "w");
     writestudentstree(p, fileclose);
     fclose(fileclose);
 }
@@ -1087,7 +1085,7 @@ struct users* loaduserstree(struct users* p) {
     fclose(file);
     treemark = 0;
     //free(s);
-     printf("vyhod loadbooktree\n");
+     //printf("vyhod loadbooktree\n");
     return p;
 
 }
@@ -1247,7 +1245,7 @@ struct booklease* bookleasenodesearch(struct booklease* p, char* s1, char* s2) {
     return NULL;
 }
 void bookleasenodedelete(struct booklease* p) {
-    printf("vhod deletenode\n");
+    //printf("vhod deletenode\n");
     if (p->parent == NULL) {
         *rootbooklease = p->next;   
     }
@@ -1257,7 +1255,7 @@ void bookleasenodedelete(struct booklease* p) {
     if (p->next != NULL) {
         (p->next)->parent = p->parent;
     }
-    printf("before free\n");
+    //printf("before free\n");
     free(p->ID);
     free(p->ISBN);
     free(p->returndate);
@@ -1370,11 +1368,12 @@ int main() {
     treemark = 0;
     char name[70];
     int value;
+    char* action;
     struct users* usersroot = NULL;
     rootusers = &usersroot;
     usersroot = loaduserstree(usersroot);
     while (access == 0) {
-        printf("vhod auth");
+        //printf("vhod auth");
         access = authorization(usersroot);
     }
     treemark = 0;
@@ -1390,39 +1389,51 @@ int main() {
     rootbooklease = &bookleaseroot;
     bookleaseroot = loadbookleasenode();
     if (((currentuser->rightsstudents) == 1) && ((currentuser->rightsbooks) == 1)) {
-    
-        printf("Menu\nWork with students.csv - 1\nWork with books.csv - 2\nExit - e\n");
         c = getchar();
         while (c != 'e') {
+            printf("Menu\nWork with students.csv - 1\nWork with books.csv - 2\nExit - e\n");
             switch (c) {
             case '1':
-
-                printf("Menu\nList all students - 1\nAdd student - 2\nDelete student - 3\nCreate backup - 4\nLoad backup - 5\nSearch student by surname - 6\nLook taken books by ID - 7\nExit - e\n");
                 c = getchar();
                 while (c != 'e') {
+                    printf("Menu\nList all students - 1\nAdd student - 2\nDelete student - 3\nCreate backup - 4\nLoad backup - 5\nSearch student by surname - 6\nLook taken books by ID - 7\nExit - e\n");
                     switch (c) {
                     case '1':
-
+                        printf("   ID   |            Surname             |      Name       |           Patronymic           | Faculty |           Speciality         \n");
                         printstudentstree(studentsroot);
+                        action = "print students";
+                        addlog(action);
                         break;
                     case '2':
 
                         studentstreeaddnew(studentsroot);
+                        action = "add student";
+                        addlog(action);
                         break;
                     case '3':
                         studentstreedelete(studentsroot);
+                        action = "delete student";
+                        addlog(action);
                         break;
                     case '4':
                         studentstreebackup(studentsroot);
+                        action = "create students backup";
+                        addlog(action);
                         break;
                     case '5':
                         studentsroot = loadstudentstreebackup(studentsroot);
+                        action = "load students backup";
+                        addlog(action);
                         break;
                     case '6':
                         searchstudentstreebysurname(studentsroot);
+                        action = "search students by name";
+                        addlog(action);
                         break;
                     case '7':
                         printstudentbooks(studentsroot);
+                        action = "print student books";
+                        addlog(action);
                         break;
                     case '\n':
 
@@ -1440,32 +1451,47 @@ int main() {
                 break;
             case '2':
 
-                printf("Menu\nList all books - 1\nAdd book - 2\nDelete book - 3\nSearch book by ISBN - 4\nGive out book - 5\nReturn book - 6\nSee given books - 7\nExit - e\n");
+                
                 c = getchar();
                 while (c != 'e') {
+                    printf("Menu\nList all books - 1\nAdd book - 2\nDelete book - 3\nSearch book by ISBN - 4\nGive out book - 5\nReturn book - 6\nSee given books - 7\nExit - e\n");
                     switch (c) {
                     case '1':
-
+                        printf("    ISBN    |             Title               |              Author            | Amount | Count \n");
                         printbookstree(booksroot);
+                        action = "print books";
+                        addlog(action);
                         break;
                     case '2':
 
                         bookstreeaddnew(booksroot);
+                        action = "add book";
+                        addlog(action);
                         break;
                     case '3':
                         bookstreedelete(booksroot);
+                        action = "delete book";
+                        addlog(action);
                         break;
                     case '4':
                         searchbookstreebyISBN(booksroot);
+                        action = "search book by ISBN";
+                        addlog(action);
                         break;
                     case '5':
                         giveoutbook(booksroot);
+                        action = "give out book";
+                        addlog(action);
                         break;
                     case '6':
                         returnbook(booksroot);
+                        action = "return book";
+                        addlog(action);
                         break;
                     case '7':
                         printbookstudents(booksroot);
+                        action = "print books";
+                        addlog(action);
                         break;
                     case '8':
                         printbookleasenode(*rootbooklease);
@@ -1500,32 +1526,47 @@ int main() {
         }
     }
     else if ((currentuser->rightsstudents) == 1) {
-    printf("Menu\nList all students - 1\nAdd student - 2\nDelete student - 3\nCreate backup - 4\nLoad backup - 5\nSearch student by surname - 6\nLook taken books by ID - 7\nExit - e\n");
+   
     c = getchar();
     while (c != 'e') {
+        printf("Menu\nList all students - 1\nAdd student - 2\nDelete student - 3\nCreate backup - 4\nLoad backup - 5\nSearch student by surname - 6\nLook taken books by ID - 7\nExit - e\n");
         switch (c) {
         case '1':
 
             printstudentstree(studentsroot);
+            action = "print students";
+            addlog(action);
             break;
         case '2':
 
             studentstreeaddnew(studentsroot);
+            action = "add student";
+            addlog(action);
             break;
         case '3':
             studentstreedelete(studentsroot);
+            action = "delete student";
+            addlog(action);
             break;
         case '4':
             studentstreebackup(studentsroot);
+            action = "create students backup";
+            addlog(action);
             break;
         case '5':
             studentsroot = loadstudentstreebackup(studentsroot);
+            action = "load students backup";
+            addlog(action);
             break;
         case '6':
             searchstudentstreebysurname(studentsroot);
+            action = "search students by name";
+            addlog(action);
             break;
         case '7':
             printstudentbooks(studentsroot);
+            action = "print student books";
+            addlog(action);
             break;
         case '\n':
 
@@ -1541,32 +1582,50 @@ int main() {
         //printf("sym %d \n", c);
     }
     } else {
-    printf("Menu\nList all books - 1\nAdd book - 2\nDelete book - 3\nSearch book by ISBN - 4\nGive out book - 5\nReturn book - 6\nSee given books - 7\nExit - e\n");
+    
     c = getchar();
     while (c != 'e') {
+        printf("Menu\nList all books - 1\nAdd book - 2\nDelete book - 3\nSearch book by ISBN - 4\nGive out book - 5\nReturn book - 6\nSee given books - 7\nExit - e\n");
         switch (c) {
         case '1':
 
             printbookstree(booksroot);
+            action = "print books";
+            addlog(action);
             break;
         case '2':
 
             bookstreeaddnew(booksroot);
+            action = "add book";
+            addlog(action);
             break;
         case '3':
             bookstreedelete(booksroot);
+            action = "delete book";
+            addlog(action);
             break;
         case '4':
             searchbookstreebyISBN(booksroot);
+            action = "search book by ISBN";
+            addlog(action);
             break;
         case '5':
             giveoutbook(booksroot);
+            action = "give out book";
+            addlog(action);
             break;
         case '6':
             returnbook(booksroot);
+            action = "return book";
+            addlog(action);
             break;
         case '7':
             printbookstudents(booksroot);
+            action = "print books";
+            addlog(action);
+            break;
+        case '8':
+            printbookleasenode(*rootbooklease);
             break;
         case '\n':
 
