@@ -12,11 +12,8 @@
 #include <time.h>
 #define HASHSIZE 300
 #define ADD_DAYS 14
-struct nlist {
-    struct nlist* next;
-    char* name;
-    int defn;
-};
+
+//структура для двоичного дерева книг
 struct books {
     char* ISBN;
     char* author;
@@ -27,6 +24,8 @@ struct books {
     struct books* right;
     struct books* parent;
 };
+
+//структура для двоичного дерева студентов
 struct students {
     char* ID;
     char* name;
@@ -38,6 +37,8 @@ struct students {
     struct students* right;
     struct students* parent;
 };
+
+//структура для двоичного дерева пользователей
 struct users {
     char* login;
     char* password;
@@ -47,6 +48,8 @@ struct users {
     struct users* right;
     struct users* parent;
 };
+
+//структура для двусвязанного списка взяиых книг
 struct booklease {
     char* ISBN;
     char* ID;
@@ -54,6 +57,18 @@ struct booklease {
     struct booklease* next;
     struct booklease* parent;
 };
+
+extern int treemark;
+extern struct books* prevbooks;
+extern struct students* prevstudents;
+extern struct users* prevusers;
+extern struct books** rootbooks;
+extern struct students** rootstudents;
+extern struct users** rootusers;
+extern struct users* currentuser;
+extern struct booklease** rootbooklease;
+
+
 FILE* openfile(char name[], char rights[]);
 char* getstr(FILE* file);
 char* getstr1(FILE* file);

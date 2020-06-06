@@ -1,5 +1,9 @@
-include "main.h"
+#include "main.h"
 
+
+// файл с общими функциями
+
+// функция для открытия файла
 FILE* openfile(char name[], char rights[]) {
     FILE* file;
     file = fopen(name, rights);
@@ -9,6 +13,8 @@ FILE* openfile(char name[], char rights[]) {
     }
     return file;
 }
+
+//функция извлечения из файла строки
 char* getstr1(FILE* file) {
     treemark = 0;
     int symbol;
@@ -24,29 +30,19 @@ char* getstr1(FILE* file) {
     }
     if (symbol == EOF)
         treemark = 1;
-    //printf(" %d, %i\n", (int)symbol,i);
-    //printf("pered if");
-  /*  if ((symbol == EOF) &&(i == 1)) {
-               printf("symbol == EOF && i==1 EOF, exit");
- //              booksmark = 0;
-               return NULL;
-        } else*/
     if (i != 1) {
         string = (char*)realloc(string, i * sizeof(char));
         string[i - 1] = 0; '\0';
-        //printf("symbol = EOF && i !=1 %s, %i, %i, %d\n", string, i*sizeof(char), i, (int)string);
-//        if (i == 65) {
-//            string = (char*)realloc(string, i * sizeof(char));
-//            putchar('4');
-//            free(string); putchar('5'); return NULL; }
         return string;
     }
     else {
         free(string);
-        printf("else NULL\n");
+        //printf("else NULL\n");
         return NULL;
     }
 }
+
+//функция чтения строки, 1 вариант
 char* readstr()
 {
     //printf("vhod readstr\n");
@@ -64,9 +60,11 @@ char* readstr()
         c = getchar();
     }
     str[i] = '\0';
-    printf("\n str - |%s|", str);
+    //printf("\n str - |%s|", str);
     return str;
 }
+
+//функция чтения строки, 2 вариант
 char* readstr1()
 {
     //printf("vhod readstr\n");
@@ -83,9 +81,11 @@ char* readstr1()
         c = getchar();
     }
     str[i] = '\0';
-    printf("\n str - |%s|", str);
+    //printf("\n str - |%s|", str);
     return str;
 }
+
+//функция для чтения слова из файла
 char* getword(FILE* file) {
     char symbol;
     int i = 2;
@@ -115,6 +115,8 @@ char* getword(FILE* file) {
     string[i - 1] = '\0';
     return string;
 }
+
+//функция извлечения из строки аргумента в виде строки
 char* extractstr(char* str, int num) {
     //  printf("vhod extractstr\n");
     int symbol;
@@ -152,6 +154,8 @@ char* extractstr(char* str, int num) {
         return NULL;
     }
 }
+
+// функция извлечения из строки аргумента в виде числа
 int extractint(char* str, int num) {
     //printf("vhod extractstr\n");
     char symbol;
@@ -191,6 +195,8 @@ int extractint(char* str, int num) {
         return number;
     }
 }
+
+//функция добавления записи в лог
 void addlog(char* str) {
     FILE* file;
     file = openfile("library.log", "a");

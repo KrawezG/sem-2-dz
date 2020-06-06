@@ -1,8 +1,14 @@
-include "main.h"
+#include "main.h"
 
+
+//файл с функциями  для работы с файлом students.csv
+
+//функция создание нового элемента дерева
 struct students* tallocstudents(void) {
     return (struct students*) malloc(sizeof(struct students));
 }
+
+//функция загрузки дерева из файла
 struct students* loadstudentstree(struct students* p) {
     int cond;
     FILE* file;
@@ -40,11 +46,11 @@ struct students* loadstudentstree(struct students* p) {
     return p;
 
 }
+
+//функция добавления элемента в дерево
 struct students* addstudentstree(struct students* p, char* str, char* s, struct students* prev) {
     // printf("vhod addbooktree\n");
-    // char* s;
     int cond;
-    //  s = extractstr(str, 1);
     //printf("ID - %s \n", s);
     if (p == NULL) {
         //    printf("p null\n");
@@ -69,6 +75,8 @@ struct students* addstudentstree(struct students* p, char* str, char* s, struct 
     //printf("vyhod addstudenttree\n");
     return p;
 }
+
+//функция добавления данных в ячейку дерева
 void studentstreeadd(struct students* p, char* str) {
     // printf("vhod bookadd\n");
     p->ID = extractstr(str, 1);
@@ -80,6 +88,8 @@ void studentstreeadd(struct students* p, char* str) {
     p->speciality = extractstr(str, 6);
     //printf("studentadd\n");
 }
+
+// фуекция добавления в дерево нового студента
 void studentstreeaddnew(struct students* p) {
     printf("\nEnter str:");
     char* str;
@@ -96,6 +106,8 @@ void studentstreeaddnew(struct students* p) {
     free(str);
     return;
 }
+
+//функция удаления студента
 void studentstreedelete(struct students* p) {
     printf("\nEnter ID:");
     char* str;
@@ -124,6 +136,8 @@ void studentstreedelete(struct students* p) {
     free(str);
     return;
 }
+
+//функция удаления ячейки дерева
 void deletestudentstree(struct students* delel1) {
     //printf("vhod deletebookstree\n");
     struct students* prev1;
@@ -210,6 +224,8 @@ void deletestudentstree(struct students* delel1) {
     //printf("vyhod deletestudentstree\n");
     return;
 }
+
+//функция поиска по номеру зачетной книжки студента
 struct students* searchstudentstree(struct students* p, char* str) {
     if (p == NULL) {
         return NULL;
@@ -225,6 +241,8 @@ struct students* searchstudentstree(struct students* p, char* str) {
 
     return p;
 }
+
+//функция печати всех студентов
 void printstudentstree(struct students* p) {
     //printf("vhod printbook");
     if (p != NULL) {
@@ -234,6 +252,8 @@ void printstudentstree(struct students* p) {
         printstudentstree(p->right);
     }
 }
+
+//функция печати книг, имеющихся у студента
 void printstudentbooks(struct students* p) {
     printf("\nEnter ID:");
     char* strID;
@@ -242,12 +262,16 @@ void printstudentbooks(struct students* p) {
     bookleasenodeprintbyID(*rootbooklease, strID);
     free(strID);
 }
+
+//функция возвращения данных в файл
 void returnstudentstree(struct students* p) {
     FILE* fileclose;
     fileclose = openfile("students.csv", "w");
     writestudentstree(p, fileclose);
     fclose(fileclose);
 }
+
+//функция ззаписи данных в файл
 void writestudentstree(struct students* p, FILE* file) {
     if (p != NULL) {
         writestudentstree(p->left, file);
@@ -256,6 +280,8 @@ void writestudentstree(struct students* p, FILE* file) {
         writestudentstree(p->right, file);
     }
 }
+
+//функция очистки дерева
 void freestudentstree(struct students* p) {
     if (p != NULL) {
         freestudentstree(p->left);
@@ -271,6 +297,8 @@ void freestudentstree(struct students* p) {
 
     }
 }
+
+//функция создания бэкапа
 void studentstreebackup(struct students* p) {
 
     char backupname[50] = { 0 };
@@ -283,6 +311,8 @@ void studentstreebackup(struct students* p) {
     fclose(filebackup);
     return;
 }
+
+//функция загрузки дерева из бэкапа
 struct students* loadstudentstreebackup(struct students* p) {
     printf("Enter backup name:");
     char* backupname = readstr();
@@ -317,6 +347,8 @@ struct students* loadstudentstreebackup(struct students* p) {
     treemark = 0;
     return pbackup;
 }
+
+//функция поиска студента по имени
 void searchstudentstreebysurname(struct students* p) {
     printf("\nPrint surname:");
     char* str;
@@ -327,6 +359,8 @@ void searchstudentstreebysurname(struct students* p) {
         printf("nothing found");
 
 }
+
+//функция печати студентов по имени
 int  printstudentstreebysurname(struct students* p, char* s) {
     int i = 0;
     int cond;

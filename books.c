@@ -1,8 +1,14 @@
-include "main.h"
+#include "main.h"
 
+//файл с функциями для работы с books.csv
+
+
+//функция для создания нового элемента дерева
 struct books* tallocbooks(void) {
     return (struct books*) malloc(sizeof(struct books));
 }
+
+//функция для загрузки дерева из файла
 struct books* loadbookstree(struct books* p) {
     int cond;
     FILE* file;
@@ -35,6 +41,8 @@ struct books* loadbookstree(struct books* p) {
     return p;
 
 }
+
+//функция для добавления элемента в дерево
 struct books* addbookstree(struct books* p, char* str, char* s, struct books* prev) {
     // printf("vhod addbooktree\n");
     // char* s;
@@ -64,6 +72,8 @@ struct books* addbookstree(struct books* p, char* str, char* s, struct books* pr
     // printf("vyhod addbooktree\n");
     return p;
 }
+
+//функция для записи данных в ячейку
 void bookstreeadd(struct books* p, char* str) {
     // printf("vhod bookadd\n");
     p->ISBN = extractstr(str, 1);
@@ -74,6 +84,8 @@ void bookstreeadd(struct books* p, char* str) {
     p->count = extractint(str, 5);
     //printf("bookadd\n");
 }
+
+//функция для записи новой книги в дерево
 void bookstreeaddnew(struct books* p) {
     printf("\nVvedite str:");
     char* str;
@@ -90,6 +102,8 @@ void bookstreeaddnew(struct books* p) {
     free(str);
     return;
 }
+
+//функция для удаления студента
 void bookstreedelete(struct books* p) {
     printf("\nEnter ISBN:");
     char* str;
@@ -117,6 +131,8 @@ void bookstreedelete(struct books* p) {
     free(str);
     return;
 }
+
+//функция для удаления ячейки дерева
 void deletebookstree(struct books* delel1) {
     //printf("vhod deletebookstree\n");
     struct books* prev1;
@@ -200,6 +216,8 @@ void deletebookstree(struct books* delel1) {
     //printf("vyhod deletebookstree\n");
     return;
 }
+
+//функция для поиска студента по номеру зачетной книжки
 struct books* searchbookstree(struct books* p, char* str) {
     if (p == NULL) {
         return NULL;
@@ -215,6 +233,8 @@ struct books* searchbookstree(struct books* p, char* str) {
 
     return p;
 }
+
+//функция для печати всех элементов дерева
 void printbookstree(struct books* p) {
     //printf("vhod printbook");
     if (p != NULL) {
@@ -224,12 +244,16 @@ void printbookstree(struct books* p) {
         printbookstree(p->right);
     }
 }
+
+//функция для возврата данных в файл
 void returnbookstree(struct books* p) {
     FILE* fileclose;
     fileclose = openfile("books.csv", "w");
     writebookstree(p, fileclose);
     fclose(fileclose);
 }
+
+//функция для печати ячеек дерева в файл
 void writebookstree(struct books* p, FILE* file) {
     if (p != NULL) {
         writebookstree(p->left, file);
@@ -238,6 +262,8 @@ void writebookstree(struct books* p, FILE* file) {
         writebookstree(p->right, file);
     }
 }
+
+//функция для освобождения дерева
 void freebookstree(struct books* p) {
     if (p != NULL) {
         freebookstree(p->left);
@@ -249,6 +275,8 @@ void freebookstree(struct books* p) {
         free(p->right);
     }
 }
+
+//функция для поиска книги по ISBN и печати
 void searchbookstreebyISBN(struct books* p) {
     char* str;
     printf("\nEnter book ISBN:");
@@ -265,6 +293,8 @@ void searchbookstreebyISBN(struct books* p) {
     }
     printf("ISBN %s |Title %s  | Author  %s |  Amount %d | Count %d\n", find->ISBN, find->title, find->author, find->amount, find->count);
 }
+
+//функция для выдачи книги студенту
 void giveoutbook(struct books* p) {
     printf("\nEnter ISBN:");
     char* strISBN;
@@ -314,6 +344,8 @@ void giveoutbook(struct books* p) {
     //free(u);
 
 }
+
+//функция для возврата книги студентом
 void returnbook(struct books* p) {
     printf("\nEnter ISBN:");
     char* strISBN;
@@ -350,6 +382,8 @@ void returnbook(struct books* p) {
     bookleasenodedelete(delel);
 
 }
+
+// функция для печати взятых книг
 void printbookstudents(struct books* p) {
     printf("\nVvedite ISBN:");
     char* strISBN;

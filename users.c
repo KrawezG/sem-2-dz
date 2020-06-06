@@ -1,8 +1,15 @@
-include "main.h"
+#include "main.h"
 
+
+
+//файл с функциями для работы с users.csv
+
+//функция создания нового элемента дерева
 struct users* tallocusers(void) {
     return (struct users*) malloc(sizeof(struct users));
 }
+
+//функция загрузки дерева из файла
 struct users* loaduserstree(struct users* p) {
     int cond;
     FILE* file;
@@ -37,6 +44,8 @@ struct users* loaduserstree(struct users* p) {
     return p;
 
 }
+
+//функция добавления элемента в дерево
 struct users* adduserstree(struct users* p, char* str, char* s, struct users* prev) {
     // printf("vhod addbooktree\n");
     // char* s;
@@ -66,6 +75,8 @@ struct users* adduserstree(struct users* p, char* str, char* s, struct users* pr
     // printf("vyhod addbooktree\n");
     return p;
 }
+
+// функция записи элемента в ячейку дерева
 void userstreeadd(struct users* p, char* str) {
     // printf("vhod bookadd\n");
     p->login = extractstr(str, 1);
@@ -75,6 +86,8 @@ void userstreeadd(struct users* p, char* str) {
     p->rightsbooks = extractint(str, 4);
     //printf("bookadd\n");
 }
+
+// функция авторизации
 int authorization(struct users* p) {
     char* strlogin;
     char* strpassword;
@@ -98,6 +111,8 @@ int authorization(struct users* p) {
         return 0;
     }
 }
+
+//функция поиска в дерева пользователя по логину
 struct users* searchuserstree(struct users* p, char* str) {
     if (p == NULL) {
         return NULL;
@@ -113,6 +128,8 @@ struct users* searchuserstree(struct users* p, char* str) {
 
     return p;
 }
+
+//функция очистки дерева
 void freeuserstree(struct users* p) {
     if (p != NULL) {
         freeuserstree(p->left);

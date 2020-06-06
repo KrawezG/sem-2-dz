@@ -1,4 +1,26 @@
-include "main.h"
+#include "main.h"
+
+
+//метка конца файла
+int treemark;
+//указатель на предыдущий элемент дерева книг
+struct books* prevbooks;
+//указатель на предыдущий элемент дерева студентов
+struct students* prevstudents;
+//указатель на предыдущий элемент дерева пользователей
+struct users* prevusers;
+//указатель на корневую €чейку дерева книг
+struct books** rootbooks;
+//указатель на корневую €чейку дерева студентов
+struct students** rootstudents;
+//указатель на корневую €чейку дерева пользователей
+struct users** rootusers;
+//указатель на €чейку текущего пользовател€
+struct users* currentuser;
+//указатель на корневую €чейку списка вз€тых книг
+struct booklease** rootbooklease;
+
+
 
 int main() {
     SetConsoleCP(1251);

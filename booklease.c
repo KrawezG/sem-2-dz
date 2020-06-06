@@ -1,5 +1,14 @@
-include "main.h"
+#include "main.h"
 
+
+//файл с функциями для работы с файлом students_books.csv
+
+//функция для создания нового элемента списка
+struct booklease* tallocbooklease(void) {
+    return (struct booklease*) malloc(sizeof(struct booklease));
+}
+
+//функция дял загрузки данных из файла в список
 struct booklease* loadbookleasenode() {
     FILE* file;
     file = openfile("students_books.csv", "r+");
@@ -22,6 +31,8 @@ struct booklease* loadbookleasenode() {
     treemark = 0;
     return p;
 }
+
+//функция для добавления элемента списка
 struct booklease* addbookleasenode(struct booklease* p, struct booklease* prev, char* str) {
     struct booklease* currenttope = tallocbooklease();
     bookleasenodeadd(currenttope, str);
@@ -34,6 +45,8 @@ struct booklease* addbookleasenode(struct booklease* p, struct booklease* prev, 
     p = currenttope;
     return p;
 }
+
+//функция для добавления элемента списка с разделенными аргументами
 void addbookleasenode1(char* ID, char* ISBN, char* time) {
     struct booklease* currenttope = tallocbooklease();
     struct booklease* p = *rootbooklease;
@@ -49,15 +62,16 @@ void addbookleasenode1(char* ID, char* ISBN, char* time) {
     *rootbooklease = currenttope;
 
 }
-struct booklease* tallocbooklease(void) {
-    return (struct booklease*) malloc(sizeof(struct booklease));
-}
+
+//функция для записи данных в элемент списка
 void bookleasenodeadd(struct booklease* p, char* str) {
     // printf("vhod bookadd\n");
     p->ISBN = extractstr(str, 1);
     p->ID = extractstr(str, 2);
     p->returndate = extractstr(str, 3);
 }
+
+//функция поиска элемента списка по номеру зачетки и ISBN
 struct booklease* bookleasenodesearch(struct booklease* p, char* s1, char* s2) {
     while (p != NULL) {
         if ((strcmp(s1, p->ISBN) == 0) && (strcmp(s2, p->ID) == 0))
@@ -67,6 +81,8 @@ struct booklease* bookleasenodesearch(struct booklease* p, char* s1, char* s2) {
     }
     return NULL;
 }
+
+//функция для удаления элемента списка
 void bookleasenodedelete(struct booklease* p) {
     //printf("vhod deletenode\n");
     if (p->parent == NULL) {
@@ -84,6 +100,8 @@ void bookleasenodedelete(struct booklease* p) {
     free(p->returndate);
 
 }
+
+//функция для подсчета взятых книг по ISBN
 int  bookleasenodesearchISBN(struct booklease* p, char* s1) {
     int i = 0;
     while (p->next != NULL) {
@@ -94,6 +112,8 @@ int  bookleasenodesearchISBN(struct booklease* p, char* s1) {
     }
     return i;
 }
+
+//функция для поиска первой взятой книги по ISBN
 struct booklease* bookleasenodesearchISBN1(struct booklease* p, char* s1) {
     struct booklease* el;
     while (p->next != NULL) {
@@ -104,6 +124,8 @@ struct booklease* bookleasenodesearchISBN1(struct booklease* p, char* s1) {
     }
     return el;
 }
+
+//функция для печати взятых книг по ISBN
 void  bookleasenodeprintbyISBN(struct booklease* p, char* s1) {
     struct booklease* el;
     while (p->next != NULL) {
@@ -119,6 +141,8 @@ void  bookleasenodeprintbyISBN(struct booklease* p, char* s1) {
     }
     return;
 }
+
+//функция для подсчета взятых книг у студента
 int  bookleasenodesearchID(struct booklease* p, char* s1) {
     int i = 0;
     while (p->next != NULL) {
@@ -129,6 +153,8 @@ int  bookleasenodesearchID(struct booklease* p, char* s1) {
     }
     return i;
 }
+
+//функция для печати взятых студентом книг
 void  bookleasenodeprintbyID(struct booklease* p, char* s1) {
     int i = 0;
     while (p->next != NULL) {
@@ -146,6 +172,8 @@ void  bookleasenodeprintbyID(struct booklease* p, char* s1) {
     }
     return;
 }
+
+//функция для возвращения данных в файл
 void returnbookleasenode(struct booklease* p) {
     FILE* fileclose;
     fileclose = openfile("students_books.csv", "w");
@@ -153,6 +181,8 @@ void returnbookleasenode(struct booklease* p) {
     fclose(fileclose);
 
 }
+
+//функция для записи элемента списка в файл
 void writebookleasenode(struct booklease* p, FILE* file) {
     if (p != NULL) {
         writebookleasenode(p->next, file);
@@ -161,6 +191,8 @@ void writebookleasenode(struct booklease* p, FILE* file) {
 
     }
 }
+
+//функция печати элементов списка
 void printbookleasenode(struct booklease* p) {
     if (p != NULL) {
         printbookleasenode(p->next);
@@ -169,6 +201,8 @@ void printbookleasenode(struct booklease* p) {
 
     }
 }
+
+//функция очистки списка
 void freebookleasenode(struct booklease* p) {
     if (p != NULL) {
         freebookleasenode(p->next);
