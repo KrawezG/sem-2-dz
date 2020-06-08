@@ -52,9 +52,10 @@ int main() {
     rootbooklease = &bookleaseroot;
     bookleaseroot = loadbookleasenode();
     if (((currentuser->rightsstudents) == 1) && ((currentuser->rightsbooks) == 1)) {
+        printf("Menu\nWork with students.csv - 1\nWork with books.csv - 2\nExit - e\n");
         c = getchar();
         while (c != 'e') {
-            printf("Menu\nWork with students.csv - 1\nWork with books.csv - 2\nExit - e\n");
+            
             switch (c) {
             case '1':
                 c = getchar();

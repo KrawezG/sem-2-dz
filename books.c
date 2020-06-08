@@ -73,6 +73,42 @@ struct books* addbookstree(struct books* p, char* str, char* s, struct books* pr
     return p;
 }
 
+//функция для добавления элемента в дерево с разделенными аргументами
+struct books* addbookstree1(struct books* p, char* strISBN, char* strauthor, char* strtitle,int amount, struct books* prev) {
+    // printf("vhod addbooktree\n");
+    // char* s;
+    int cond;
+    //  s = extractstr(str, 1);
+      //printf("ISBN - %s \n", s);
+    if (p == NULL) {
+        //    printf("p null\n");
+        p = tallocbooks();
+        
+        p->ISBN = strISBN;
+        p->author = strauthor;
+        p->title = strtitle;
+        p->amount = amount;
+        p->count = amount;
+        p->left = p->right = NULL;
+        p->parent = prev;
+        //   printf("zapis knigi\n");
+    }
+    else if ((cond = strcmp(strISBN, p->ISBN)) == 0)
+        printf("book already exist\n");
+    else if (cond < 0) {
+        //    printf("left addbooktree\n");
+        p->left = addbookstree1(p->left, strISBN, strauthor, strtitle, amount, p);
+    }
+
+    else {
+        //   printf("right addbooktree\n");
+        p->right = addbookstree1(p->right, strISBN, strauthor, strtitle, amount, p);
+
+    }
+    // printf("vyhod addbooktree\n");
+    return p;
+}
+
 //функция для записи данных в ячейку
 void bookstreeadd(struct books* p, char* str) {
     // printf("vhod bookadd\n");
@@ -86,6 +122,7 @@ void bookstreeadd(struct books* p, char* str) {
 }
 
 //функция для записи новой книги в дерево
+/*
 void bookstreeaddnew(struct books* p) {
     printf("\nVvedite str:");
     char* str;
@@ -100,6 +137,30 @@ void bookstreeaddnew(struct books* p) {
     p = addbookstree(p, str, s, NULL);
     free(s);
     free(str);
+    return;
+}*/
+void bookstreeaddnew(struct books* p) {
+    char* strISBN;
+    char* strauthor;
+    char* strtitle;
+    int amount;
+    printf("\nEbter ISBN:");
+    strISBN = readstr();
+    if (strlen(strISBN) != 10)  {
+        printf("wrong data\n");
+        return;
+    }
+    printf("\nEbter author:");
+    strauthor = readstr1();
+    printf("\nEbter title:");
+    strtitle = readstr1();
+    printf("\nEbter amount:");
+    scanf("%d", &amount);
+    if (amount < 1) {
+        printf("wrong data\n");
+        return;
+    }
+    p = addbookstree1(p, strISBN, strauthor, strtitle, amount, NULL);
     return;
 }
 

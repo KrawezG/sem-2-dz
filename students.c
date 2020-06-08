@@ -76,6 +76,39 @@ struct students* addstudentstree(struct students* p, char* str, char* s, struct 
     return p;
 }
 
+//функция добавления элемента в дерево
+struct students* addstudentstree1(struct students* p, char* strID , char* strsurname, char* strname, char* strpatronymic, char* strfaculty, char* strspeciality, struct students* prev) {
+    // printf("vhod addbooktree\n");
+    int cond;
+    if (p == NULL) {
+        //    printf("p null\n");
+        p = tallocstudents();
+        p->ID = strID;
+        //printf("ID - %s, p = %d \n", p->ID, (int)p);
+        p->surname = strsurname;
+        p->name = strname;
+        p->patronymic = strpatronymic;
+        p->faculty = strfaculty;
+        p->speciality = strspeciality;
+        p->left = p->right = NULL;
+        p->parent = prev;
+    }
+    else if ((cond = strcmp(strID, p->ID)) == 0)
+        printf("student already exist\n");
+    else if (cond < 0) {
+        //    printf("left addbooktree\n");
+        p->left = addstudentstree1(p->left, strID, strsurname, strname, strpatronymic, strfaculty, strspeciality, p);
+    }
+
+    else {
+        //   printf("right addbooktree\n");
+        p->right = addstudentstree1(p->right, strID, strsurname, strname, strpatronymic, strfaculty, strspeciality, p);
+
+    }
+    //printf("vyhod addstudenttree\n");
+    return p;
+}
+
 //функция добавления данных в ячейку дерева
 void studentstreeadd(struct students* p, char* str) {
     // printf("vhod bookadd\n");
@@ -91,6 +124,29 @@ void studentstreeadd(struct students* p, char* str) {
 
 // фуекция добавления в дерево нового студента
 void studentstreeaddnew(struct students* p) {
+    char* strID;
+    char* strsurname;
+    char* strname;
+    char* strpatronymic;
+    char* strfaculty;
+    char* strspeciality;
+    printf("\nEbter ID:");
+    strID = readstr();
+    if (strlen(strID) != 6) {
+        printf("wrong data\n");
+        return;
+    }
+    printf("\nEbter surname:");
+    strsurname = readstr1();
+    printf("\nEbter name:");
+    strname = readstr1();
+    printf("\nEbter patronymic:");
+    strpatronymic = readstr1();
+    printf("\nEbter faculty:");
+    strfaculty = readstr1();
+    printf("\nEbter speciality:");
+    strspeciality = readstr1();
+    /*
     printf("\nEnter str:");
     char* str;
     str = readstr();
@@ -101,9 +157,8 @@ void studentstreeaddnew(struct students* p) {
         return;
     }
     s = extractstr(str, 2);
-    p = addstudentstree(p, str, s, NULL);
-    free(s);
-    free(str);
+    */
+    p = addstudentstree1(p, strID, strsurname, strname, strpatronymic, strfaculty, strspeciality, NULL);
     return;
 }
 
